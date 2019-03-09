@@ -1,0 +1,23 @@
+version: '3'
+services:
+  athina-web:
+    image: athinaedu/athina-web:latest
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./athina_files/:/code/athina_files/
+      - ./db.sqlite3:/code/db.sqlite3
+      - ./athinaweb/settings_secret.py:/code/athinaweb/settings_secret.py
+    expose:
+      - "8000"
+    ports:
+      - "8000:8000"
+  athina:
+    image: athinaedu/athina:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./athina_files/:/code/athina_files/
+      - /tmp:/tmp
+    depends_on:
+      - "athina-web"
+    command: ["--json", "http://127.0.0.1:8000/assignments/api", "-s"]
+    network_mode: "host"

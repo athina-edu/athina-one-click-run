@@ -19,5 +19,5 @@ services:
       - /tmp:/tmp
     depends_on:
       - "athina-web"
-    command: ["--json", "http://127.0.0.1:8000/assignments/api", "-s"]
+    command: ["--json", "http://127.0.0.1:8000/assignments/api", "-s", "-v"]
     network_mode: "host"

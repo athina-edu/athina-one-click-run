@@ -16,6 +16,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/
+      - ./logs/:/code/logs/
       - /tmp:/tmp
     depends_on:
       - "athina-web"

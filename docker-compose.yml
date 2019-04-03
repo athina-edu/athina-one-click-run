@@ -2,13 +2,13 @@ version: '2'
 services:
   athina-web:
     image: athinaedu/athina-web:latest
-    command: gunicorn --bind :8000 athinaweb.wsgi:application
+    command: gunicorn --bind :8001 athinaweb.wsgi:application
     volumes:
       - ./athina_files/:/code/athina_files/
       - ./db.sqlite3:/code/db.sqlite3
       - ./athinaweb/settings_secret.py:/code/athinaweb/settings_secret.py
     expose:
-      - "8000"
+      - "8001"
   nginx:
     image: nginx
     volumes:
@@ -17,7 +17,6 @@ services:
       - ./nginx/cache/:/etc/nginx/cache
       - ./certs/:/etc/certs/
     ports:
-      - 80:80
       - 443:443
       - 8000:8000
     depends_on:
@@ -31,5 +30,6 @@ services:
       - /tmp:/tmp
     depends_on:
       - "nginx"
-    command: ["--json", "http://127.0.0.1:80/assignments/api", "-s", "-v"]
+      - "athina-web"
+    command: ["--json", "http://athina-web:8001/assignments/api", "-s", "-v"]
     network_mode: "host"

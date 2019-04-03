@@ -46,6 +46,19 @@ docker-compose run athina-web python manage.py migrate
 docker-compose run athina-web python manage.py createsuperuser
 fi
 
+# Nginx config
+if [ ! -f "certs/athinaweb.key" ]; then
+    cd athinaweb
+    ip=$(python -c 'import settings_secret; print settings_secret.ALLOWED_HOSTS[1]')
+    cd ../certs/
+    openssl req -x509 -nodes -newkey rsa:2048 -keyout athinaweb.key -out athinaweb.crt -subj "/C=US/ST=Washington/L=Bellingham/O=AthinaWeb/OU=AthinaWeb/CN=$ip"
+    cd ..
+    rm -f nginx.conf.old
+    mv nginx.conf nginx.conf.old
+    cat nginx.conf.old | sed -r "s/server_name.+;/server_name $ip;/gi" > nginx.conf
+fi
+
+
 # Creating db.sqlite3 in case it doesn't exist
 docker-compose run athina-web python manage.py migrate
 

@@ -2,3 +2,5 @@ athina/*
 athina_files/*
 db.sqlite3
 athinaweb/*
+nginx.conf.old
+.idea*

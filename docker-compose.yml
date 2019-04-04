@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   athina-web:
     image: athinaedu/athina-web:latest
@@ -17,6 +17,7 @@ services:
       - ./nginx/cache/:/etc/nginx/cache
       - ./certs/:/etc/certs/
     ports:
+      - 80:80
       - 443:443
       - 8000:8000
     depends_on:
@@ -30,6 +31,5 @@ services:
       - /tmp:/tmp
     depends_on:
       - "nginx"
-      - "athina-web"
-    command: ["--json", "http://athina-web:8001/assignments/api", "-s", "-v"]
+    command: ["--json", "http://127.0.0.1/assignments/api", "-s", "-v"]
     network_mode: "host"

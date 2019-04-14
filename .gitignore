@@ -5,3 +5,4 @@ athinaweb/*
 nginx.conf.old
 .idea*
 *.bak
+static_files

@@ -2,11 +2,12 @@ version: '3'
 services:
   athina-web:
     image: athinaedu/athina-web:latest
-    command: gunicorn --bind :8001 athinaweb.wsgi:application
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8001 athinaweb.wsgi:application"
     volumes:
       - ./athina_files/:/code/athina_files/
       - ./db.sqlite3:/code/db.sqlite3
       - ./athinaweb/settings_secret.py:/code/athinaweb/settings_secret.py
+      - ./static_files:/code/static_files
     expose:
       - "8001"
   nginx:
@@ -16,6 +17,7 @@ services:
       - ./nginx/error.log:/etc/nginx/error_log.log
       - ./nginx/cache/:/etc/nginx/cache
       - ./certs/:/etc/certs/
+      - ./static_files:/code/static_files
     ports:
       - 80:80
       - 443:443
@@ -31,5 +33,6 @@ services:
       - /tmp:/tmp
     depends_on:
       - "nginx"
+      - "athina-web"
     command: ["--json", "http://127.0.0.1/assignments/api", "-s", "-v"]
     network_mode: "host"

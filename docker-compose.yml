@@ -34,5 +34,5 @@ services:
     depends_on:
       - "nginx"
       - "athina-web"
-    command: ["--json", "http://127.0.0.1/assignments/api", "-s", "-v"]
+    command: ["--json", "http://127.0.0.1/assignments/api/", "-s", "-v"]
     network_mode: "host"

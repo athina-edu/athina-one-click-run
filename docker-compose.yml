@@ -10,6 +10,8 @@ services:
       - ./static_files:/code/static_files
     expose:
       - "8001"
+    depends_on:
+      - "db"
   nginx:
     image: nginx
     volumes:
@@ -26,6 +28,11 @@ services:
       - "athina-web"
   athina:
     image: athinaedu/athina:latest
+    environment:
+      ATHINA_MYSQL_HOST: 'db'
+      ATHINA_MYSQL_PORT: '3306'
+      ATHINA_MYSQL_USERNAME: 'athina'
+      ATHINA_MYSQL_PASSWORD: 'password'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/
@@ -34,5 +41,17 @@ services:
     depends_on:
       - "nginx"
       - "athina-web"
+      - "db"
     command: ["--json", "http://127.0.0.1/assignments/api/", "-s", "-v"]
     network_mode: "host"
+  db:
+    image: mysql:5.7
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_DATABASE: 'athina'
+      MYSQL_USER: 'athina'
+      MYSQL_PASSWORD: 'password'
+      MYSQL_ROOT_PASSWORD: 'password'
+    volumes:
+      - ./mysql:/var/lib/mysql

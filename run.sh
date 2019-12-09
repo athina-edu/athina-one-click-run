@@ -28,6 +28,12 @@ if [ ! -f "athinaweb/settings_secret.py" ]; then
     ip="127.0.0.1"
   fi
 
+  # MySQL pass
+  rm -f docker-compose.yml.bak
+  mv docker-compose.yml docker-compose.yml.bak
+  mysql_pass=$(pwgen 32 1)
+  cat docker-compose.yml.bak | sed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
+
   secret_key=$(date +%s | sha256sum | base64 | head -c 64 ; echo)
   echo "
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -36,14 +42,24 @@ SECRET_KEY='$secret_key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG=False
 
-ALLOWED_HOSTS=['127.0.0.1', '$ip']" > athinaweb/settings_secret.py
+ALLOWED_HOSTS=['127.0.0.1', '$ip']
 
-# Creating db.sqlite3 in case it doesn't exist
-touch db.sqlite3
-docker-compose run athina-web python manage.py migrate
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'athina_web',
+        'USER': 'athina',
+        'PASSWORD': '$mysql_pass',
+        'HOST': 'db',
+        'PORT': 3306,
+    }
+}" > athinaweb/settings_secret.py
 
-# Creating superuser
-docker-compose run athina-web python manage.py createsuperuser
+  # Creating db.sqlite3 in case it doesn't exist
+  docker-compose run athina-web python manage.py migrate
+
+  # Creating superuser
+  docker-compose run athina-web python manage.py createsuperuser
 fi
 
 if [ ! -f "certs/athinaweb.key" ]; then
@@ -56,12 +72,6 @@ if [ ! -f "certs/athinaweb.key" ]; then
     rm -f nginx.conf.bak
     mv nginx.conf nginx.conf.bak
     cat nginx.conf.bak | sed -r "s/server_name.+;/server_name $ip;/gi" > nginx.conf
-
-    # MySQL pass
-    rm -f docker-compose.yml.bak
-    mv docker-compose.yml docker-compose.yml.bak
-    mysql_pass=$(pwgen 32 1)
-    cat docker-compose.yml.bak | sed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
 fi
 
 # Creating db.sqlite3 in case it doesn't exist

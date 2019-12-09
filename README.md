@@ -5,7 +5,7 @@
 * docker-compose
 
 ### Ubuntu (18.04+)
-`apt install docker.io docker-compose`
+`apt install docker.io docker-compose pwgen`
 
 or install the latest versions
 

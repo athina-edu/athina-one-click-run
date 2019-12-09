@@ -46,8 +46,8 @@ docker-compose run athina-web python manage.py migrate
 docker-compose run athina-web python manage.py createsuperuser
 fi
 
-# Nginx config
 if [ ! -f "certs/athinaweb.key" ]; then
+    # Nginx config
     cd athinaweb
     ip=$(python -c 'import settings_secret; print settings_secret.ALLOWED_HOSTS[1]')
     cd ../certs/
@@ -56,6 +56,12 @@ if [ ! -f "certs/athinaweb.key" ]; then
     rm -f nginx.conf.bak
     mv nginx.conf nginx.conf.bak
     cat nginx.conf.bak | sed -r "s/server_name.+;/server_name $ip;/gi" > nginx.conf
+
+    # MySQL pass
+    rm -f docker-compose.yml.bak
+    mv docker-compose.yml docker-compose.yml.bak
+    mysql_pass=$(pwgen 32 1)
+    cat docker-compose.yml.bak | sed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
 fi
 
 # Creating db.sqlite3 in case it doesn't exist

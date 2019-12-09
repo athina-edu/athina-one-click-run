@@ -61,7 +61,7 @@ if [ ! -f "certs/athinaweb.key" ]; then
     rm -f docker-compose.yml.bak
     mv docker-compose.yml docker-compose.yml.bak
     mysql_pass=$(pwgen 32 1)
-    cat docker-compose.yml.bak | ed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
+    cat docker-compose.yml.bak | sed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
 fi
 
 # Creating db.sqlite3 in case it doesn't exist

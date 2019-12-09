@@ -32,7 +32,7 @@ services:
       ATHINA_MYSQL_HOST: 'db'
       ATHINA_MYSQL_PORT: '3306'
       ATHINA_MYSQL_USERNAME: 'athina'
-      ATHINA_MYSQL_PASSWORD: 'password'
+      ATHINA_MYSQL_PASSWORD: 'Ieph3ohLahHo0eg4aig2aelooPaim0ee'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/
@@ -46,12 +46,12 @@ services:
     network_mode: "host"
   db:
     image: mysql:5.7
-    ports:
-      - '3306:3306'
+    expose:
+      - '3306'
     environment:
       MYSQL_DATABASE: 'athina'
       MYSQL_USER: 'athina'
-      MYSQL_PASSWORD: 'password'
+      MYSQL_PASSWORD: 'Ieph3ohLahHo0eg4aig2aelooPaim0ee'
       MYSQL_ROOT_PASSWORD: 'password'
     volumes:
       - ./mysql:/var/lib/mysql

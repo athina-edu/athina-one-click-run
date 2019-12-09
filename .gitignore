@@ -6,3 +6,4 @@ nginx.conf.old
 .idea*
 *.bak
 static_files
+mysql/*

@@ -31,8 +31,8 @@ if [ ! -f "athinaweb/settings_secret.py" ]; then
   # MySQL pass
   rm -f docker-compose.yml.bak
   mv docker-compose.yml docker-compose.yml.bak
-  mysql_pass=$(pwgen 32 1)
-  cat docker-compose.yml.bak | sed -r "s/MYSQL_PASSWORD:.+/MYSQL_PASSWORD: '$mysql_pass'/gi" > docker-compose.yml
+  mysql_pass=$(pwgen 10 1)
+  cat docker-compose.yml.bak | sed -r "s/_PASSWORD:.+/_PASSWORD: \"$mysql_pass\"/gi" > docker-compose.yml
 
   secret_key=$(date +%s | sha256sum | base64 | head -c 64 ; echo)
   echo "
@@ -42,7 +42,7 @@ SECRET_KEY='$secret_key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG=False
 
-ALLOWED_HOSTS=['127.0.0.1', '$ip']
+ALLOWED_HOSTS=['172.28.1.1', '$ip']
 
 DATABASES = {
     'default': {
@@ -54,6 +54,17 @@ DATABASES = {
         'PORT': 3306,
     }
 }" > athinaweb/settings_secret.py
+
+  # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
+  docker-compose up -d db
+
+  sleep 10
+
+  # Grant athina db access
+  echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.28.1.4 -uroot -p$mysql_pass
+
+  # Shut down
+  docker-compose down
 
   # Creating db.sqlite3 in case it doesn't exist
   docker-compose run athina-web python manage.py migrate

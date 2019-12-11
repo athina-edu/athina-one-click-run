@@ -44,6 +44,7 @@ services:
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
       ATHINA_MYSQL_PASSWORD: "Quule6ahSh"
+      ATHINA_WEB_URL: "https://publicurl"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/

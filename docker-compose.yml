@@ -44,7 +44,7 @@ services:
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
       ATHINA_MYSQL_PASSWORD: "Eicee8ohSh"
-      ATHINA_WEB_URL: "https://127.0.0.1"
+      ATHINA_WEB_URL: "https://127.0.0.1:8000"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/
@@ -55,7 +55,6 @@ services:
       - "athina-web"
       - "db"
     command: ["--json", "http://172.28.1.1/assignments/api/", "-s", "-v"]
-    #network_mode: "host"
     networks:
       athina_net:
         ipv4_address: 172.28.1.3

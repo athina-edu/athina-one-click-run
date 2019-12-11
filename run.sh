@@ -34,6 +34,10 @@ if [ ! -f "athinaweb/settings_secret.py" ]; then
   mysql_pass=$(pwgen 10 1)
   cat docker-compose.yml.bak | sed -r "s/_PASSWORD:.+/_PASSWORD: \"$mysql_pass\"/gi" > docker-compose.yml
 
+  rm -f docker-compose.yml.bak
+  mv docker-compose.yml docker-compose.yml.bak
+  cat docker-compose.yml.bak | sed -r "s/ATHINA_WEB_URL:.+/ATHINA_WEB_URL: \"https:\/\/$ip\"/gi" > docker-compose.yml
+
   secret_key=$(date +%s | sha256sum | base64 | head -c 64 ; echo)
   echo "
 # SECURITY WARNING: keep the secret key used in production secret!

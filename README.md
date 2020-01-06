@@ -3,6 +3,7 @@
 ## Prerequisites
 * docker
 * docker-compose
+* pwgen
 
 ### Ubuntu (18.04+)
 `apt install docker.io docker-compose pwgen`

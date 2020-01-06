@@ -4,9 +4,10 @@
 dockercommand=$(command -v docker | wc -l)
 dockercompcommand=$(command -v docker-compose | wc -l)
 pwgencommand=$(command -v pwgen | wc -l)
+mysqlcommand=$(command -v mysql | wc -l)
 
-if [[ $dockercommand -eq 0 || $dockercompcommand -eq 0 ]]; then
-  echo "docker, docker-compose or pwgen is missing on system"
+if [[ $dockercommand -eq 0 || $dockercompcommand -eq 0 || $pwgencommand -eq 0 || $mysqlcommand -eq 0 ]]; then
+  echo "docker, docker-compose, mysql-client or pwgen is missing on system"
   echo "Install them first in your system then run again this script."
 fi
 

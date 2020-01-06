@@ -65,7 +65,7 @@ DATABASES = {
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
   docker-compose up -d db
 
-  sleep 10
+  sleep 70 # In some slow systems, the first mysql init may take a long time
 
   # Grant athina db access
   echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.28.1.4 -uroot -p$mysql_pass

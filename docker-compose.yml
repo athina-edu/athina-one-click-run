@@ -45,6 +45,8 @@ services:
       ATHINA_MYSQL_USERNAME: "athina"
       ATHINA_MYSQL_PASSWORD: "Eicee8ohSh"
       ATHINA_WEB_URL: "https://127.0.0.1:8000"
+      GLOBAL_MEMORY_LIMIT: 80
+      DOCKER_MAX_MEMORY: "2g"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./athina_files/:/code/athina_files/

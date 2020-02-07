@@ -3,11 +3,14 @@
 # Check dependencies
 dockercommand=$(command -v docker | wc -l)
 dockercompcommand=$(command -v docker-compose | wc -l)
+pwgencommand=$(command -v pwgen | wc -l)
+mysqlcommand=$(command -v mysql | wc -l)
 
-if [[ $dockercommand -eq 0 || $dockercompcommand -eq 0 ]]; then
-  echo "docker or docker-compose missing on system"
+if [[ $dockercommand -eq 0 || $dockercompcommand -eq 0 || $pwgencommand -eq 0 || $mysqlcommand -eq 0 ]]; then
+  echo "docker, docker-compose, mysql-client or pwgen is missing on system"
   echo "Install them first in your system then run again this script."
 fi
+
 
 # Downloading and building images
 docker-compose pull
@@ -62,7 +65,7 @@ DATABASES = {
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
   docker-compose up -d db
 
-  sleep 10
+  sleep 70 # In some slow systems, the first mysql init may take a long time
 
   # Grant athina db access
   echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.28.1.4 -uroot -p$mysql_pass

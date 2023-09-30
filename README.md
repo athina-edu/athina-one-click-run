@@ -2,14 +2,9 @@
 
 ## Prerequisites
 * docker
-* docker-compose
+* docker compose
 * pwgen
 * mysql-client
-
-### Ubuntu (18.04+)
-`apt install docker.io docker-compose pwgen mysql-client`
-
-or install the latest versions
 
 ## Run and auto-install
 `sudo su` # run as root

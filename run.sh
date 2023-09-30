@@ -2,18 +2,17 @@
 
 # Check dependencies
 dockercommand=$(command -v docker | wc -l)
-dockercompcommand=$(command -v docker-compose | wc -l)
 pwgencommand=$(command -v pwgen | wc -l)
 mysqlcommand=$(command -v mysql | wc -l)
 
-if [[ $dockercommand -eq 0 || $dockercompcommand -eq 0 || $pwgencommand -eq 0 || $mysqlcommand -eq 0 ]]; then
-  echo "docker, docker-compose, mysql-client or pwgen is missing on system"
+if [[ $dockercommand -eq 0 || $pwgencommand -eq 0 || $mysqlcommand -eq 0 ]]; then
+  echo "docker, docker compose, mysql-client (mariadb-client) or pwgen is missing on system"
   echo "Install them first in your system then run again this script."
 fi
 
 
 # Downloading and building images
-docker-compose pull
+docker compose pull
 
 # Creating necessary secrets for the new installation (if they do not exist)
 if [ ! -d "athinaweb" ]; then
@@ -63,7 +62,7 @@ DATABASES = {
 }" > athinaweb/settings_secret.py
 
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
-  docker-compose up -d db
+  docker compose up -d db
 
   sleep 70 # In some slow systems, the first mysql init may take a long time
 
@@ -71,13 +70,13 @@ DATABASES = {
   echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.28.1.4 -uroot -p$mysql_pass
 
   # Shut down
-  docker-compose down
+  docker compose down
 
   # Creating db.sqlite3 in case it doesn't exist
-  docker-compose run athina-web python manage.py migrate
+  docker compose run athina-web python manage.py migrate
 
   # Creating superuser
-  docker-compose run athina-web python manage.py createsuperuser
+  docker compose run athina-web python manage.py createsuperuser
 fi
 
 if [ ! -f "certs/athinaweb.key" ]; then
@@ -93,8 +92,8 @@ if [ ! -f "certs/athinaweb.key" ]; then
 fi
 
 # Creating db.sqlite3 in case it doesn't exist
-docker-compose run athina-web python manage.py migrate
+docker compose run athina-web python manage.py migrate
 
-docker-compose up
+docker compose up
 
 

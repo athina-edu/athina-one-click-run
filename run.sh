@@ -48,7 +48,7 @@ SECRET_KEY='$secret_key'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG=False
 
-ALLOWED_HOSTS=['172.28.1.1', '$ip']
+ALLOWED_HOSTS=['172.29.1.1', '$ip']
 
 DATABASES = {
     'default': {
@@ -62,12 +62,14 @@ DATABASES = {
 }" > athinaweb/settings_secret.py
 
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
-  docker compose up -d db
+  docker compose up db &
 
-  sleep 70 # In some slow systems, the first mysql init may take a long time
+  echo "Waiting"
+  sleep 60 # In some slow systems, the first mysql init may take a long time
 
+  echo "Running"
   # Grant athina db access
-  echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.28.1.4 -uroot -p$mysql_pass
+  echo "CREATE DATABASE athina; GRANT ALL ON athina.* TO 'athina'@'%';"| mysql -h172.29.1.4 -uroot -p$mysql_pass
 
   # Shut down
   docker compose down

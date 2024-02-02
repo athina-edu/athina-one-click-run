@@ -16,10 +16,10 @@ services:
       ATHINA_MYSQL_HOST: "db"
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
-      ATHINA_MYSQL_PASSWORD: "Eicee8ohSh"
+      ATHINA_MYSQL_PASSWORD: "pae1eesahD"
     networks:
       athina_net:
-        ipv4_address: 172.28.1.2
+        ipv4_address: 172.29.1.2
   nginx:
     image: nginx
     volumes:
@@ -30,7 +30,7 @@ services:
       - ./static_files:/code/static_files
     networks:
       athina_net:
-        ipv4_address: 172.28.1.1
+        ipv4_address: 172.29.1.1
     ports:
       - 80:80
       - 443:443
@@ -43,8 +43,8 @@ services:
       ATHINA_MYSQL_HOST: "db"
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
-      ATHINA_MYSQL_PASSWORD: "Eicee8ohSh"
-      ATHINA_WEB_URL: "https://127.0.0.1:8000"
+      ATHINA_MYSQL_PASSWORD: "pae1eesahD"
+      ATHINA_WEB_URL: "https://127.0.0.1"
       GLOBAL_MEMORY_LIMIT: 80
       DOCKER_MEMORY_LIMIT: "2g"
     volumes:
@@ -56,10 +56,10 @@ services:
       - "nginx"
       - "athina-web"
       - "db"
-    command: ["--json", "http://172.28.1.1/assignments/api/", "-s", "-v"]
+    command: ["--json", "http://172.29.1.1/assignments/api/", "-s", "-v"]
     networks:
       athina_net:
-        ipv4_address: 172.28.1.3
+        ipv4_address: 172.29.1.3
   db:
     image: mysql:5.7
     expose:
@@ -67,17 +67,17 @@ services:
     environment:
       MYSQL_DATABASE: "athina_web"
       MYSQL_USER: "athina"
-      MYSQL_PASSWORD: "Eicee8ohSh"
-      MYSQL_ROOT_PASSWORD: "Eicee8ohSh"
+      MYSQL_PASSWORD: "pae1eesahD"
+      MYSQL_ROOT_PASSWORD: "pae1eesahD"
     volumes:
       - ./mysql:/var/lib/mysql
     networks:
       athina_net:
-        ipv4_address: 172.28.1.4
+        ipv4_address: 172.29.1.4
 
 networks:
     athina_net:
         ipam:
             driver: default
             config:
-                - subnet: 172.28.0.0/16
+                - subnet: 172.29.0.0/16

@@ -1,0 +1,79 @@
+networks:
+  athina_net:
+    ipam:
+      config:
+      - subnet: 172.16.0.0/16
+      driver: default
+services:
+  athina:
+    command:
+    - --json
+    - http://172.29.1.1/assignments/api/
+    - -s
+    - -v
+    depends_on:
+    - nginx
+    - athina-web
+    - db
+    environment:
+      ATHINA_MYSQL_HOST: db
+      ATHINA_MYSQL_PASSWORD: pae1eesahD
+      ATHINA_MYSQL_PORT: '3306'
+      ATHINA_MYSQL_USERNAME: athina
+      ATHINA_WEB_URL: https://127.0.0.1
+      DOCKER_MEMORY_LIMIT: 2g
+      GLOBAL_MEMORY_LIMIT: 80
+    image: athinaedu/athina:latest
+    networks:
+      athina_net: {}
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    - ./athina_files/:/code/athina_files/
+    - ./logs/:/code/logs/
+    - /tmp:/tmp
+  athina-web:
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind
+      :8001 athinaweb.wsgi:application"
+    depends_on:
+    - db
+    environment:
+      ATHINA_MYSQL_HOST: db
+      ATHINA_MYSQL_PASSWORD: pae1eesahD
+      ATHINA_MYSQL_PORT: '3306'
+      ATHINA_MYSQL_USERNAME: athina
+    expose:
+    - '8001'
+    image: athinaedu/athina-web:latest
+    networks:
+      athina_net: {}
+    volumes:
+    - ./athina_files/:/code/athina_files/
+    - ./db.sqlite3:/code/db.sqlite3
+    - ./athinaweb/settings_secret.py:/code/athinaweb/settings_secret.py
+    - ./static_files:/code/static_files
+  db:
+    environment:
+      MYSQL_DATABASE: athina_web
+      MYSQL_PASSWORD: pae1eesahD
+      MYSQL_ROOT_PASSWORD: pae1eesahD
+      MYSQL_USER: athina
+    expose:
+    - '3306'
+    image: mysql:5.7
+    networks:
+      athina_net: {}
+    volumes:
+    - ./mysql:/var/lib/mysql
+  nginx:
+    depends_on:
+    - athina-web
+    image: nginx
+    networks:
+      athina_net: {}
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf
+    - ./nginx/error.log:/etc/nginx/error_log.log
+    - ./nginx/cache/:/etc/nginx/cache
+    - ./certs/:/etc/certs/
+    - ./static_files:/code/static_files
+version: '3'

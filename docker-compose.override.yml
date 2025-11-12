@@ -1,0 +1,80 @@
+version: '3'
+services:
+  athina-web:
+    image: athinaedu/athina-web:latest
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8001 athinaweb.wsgi:application"
+    volumes:
+      - /mnt/local_data/athina-dev/athina-one-click-run/athina_files/:/code/athina_files/
+      - /mnt/local_data/athina-dev/athina/athina-web/db.sqlite3:/code/db.sqlite3
+      - /mnt/local_data/athina-dev/athina/athina-web/athinaweb/settings_secret_local.py:/code/athinaweb/settings_secret.py:ro
+      - /mnt/local_data/athina-dev/athina-one-click-run/static_files:/code/static_files
+    expose:
+      - "8001"
+    depends_on:
+      - db
+    environment:
+      ATHINA_MYSQL_HOST: "db"
+      ATHINA_MYSQL_PORT: "3306"
+      ATHINA_MYSQL_USERNAME: "athina"
+      ATHINA_MYSQL_PASSWORD: "pae1eesahD"
+    networks:
+      - athina_net
+
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/error.log:/etc/nginx/error_log.log
+      - ./nginx/cache/:/etc/nginx/cache
+      - ./certs/:/etc/certs/
+      - ./static_files:/code/static_files
+    networks:
+      - athina_net
+    depends_on:
+      - athina-web
+
+  athina:
+    image: athinaedu/athina:latest
+    environment:
+      ATHINA_MYSQL_HOST: "db"
+      ATHINA_MYSQL_PORT: "3306"
+      ATHINA_MYSQL_USERNAME: "athina"
+      ATHINA_MYSQL_PASSWORD: "pae1eesahD"
+      ATHINA_WEB_URL: "https://127.0.0.1"
+      GLOBAL_MEMORY_LIMIT: 80
+      DOCKER_MEMORY_LIMIT: "2g"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./athina_files/:/code/athina_files/
+      - ./logs/:/code/logs/
+      - /tmp:/tmp
+    depends_on:
+      - nginx
+      - athina-web
+      - db
+    command: ["--json", "http://172.29.1.1/assignments/api/", "-s", "-v"]
+    networks:
+      - athina_net
+
+  db:
+    image: mysql:5.7
+    expose:
+      - '3306'
+    environment:
+      MYSQL_DATABASE: "athina_web"
+      MYSQL_USER: "athina"
+      MYSQL_PASSWORD: "pae1eesahD"
+      MYSQL_ROOT_PASSWORD: "pae1eesahD"
+    # Use a named volume for mysql data in dev to avoid host permission issues
+    volumes:
+      - athina_dev_mysql:/var/lib/mysql
+    networks:
+      - athina_net
+
+networks:
+  athina_net:
+    driver: bridge
+
+volumes:
+  athina_dev_mysql:
+    driver: local

@@ -44,7 +44,7 @@ if [ ! -f "athinaweb/settings_secret.py" ]; then
   echo "
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY='$secret_key'
-  
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG=False
 
@@ -59,7 +59,23 @@ DATABASES = {
         'HOST': 'db',
         'PORT': 3306,
     }
-}" > athinaweb/settings_secret.py
+}
+
+# Production security settings (running behind nginx HTTPS proxy)
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = True
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+" > athinaweb/settings_secret.py
 
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
   docker compose up db &

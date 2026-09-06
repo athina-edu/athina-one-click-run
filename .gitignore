@@ -1,9 +1,12 @@
 athina/*
 athina_files/*
 db.sqlite3
+athina_web/*
 athinaweb/*
 nginx.conf.old
 .idea*
 *.bak
 static_files
 mysql/*
+# Local dev overrides (contains machine-specific paths) — not for production
+docker-compose.override.yml

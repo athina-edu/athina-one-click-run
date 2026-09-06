@@ -15,15 +15,15 @@ fi
 docker compose pull
 
 # Creating necessary secrets for the new installation (if they do not exist)
-if [ ! -d "athinaweb" ]; then
-  mkdir athinaweb
+if [ ! -d "athina_web" ]; then
+  mkdir athina_web
 fi
 
-if [ ! -f "athinaweb/settings_secret.py" ]; then
+if [ ! -f "athina_web/settings_secret.py" ]; then
   echo -e "First time installation! Welcome!"
   echo -e "Enter the authorized domain through which the web interface can be accessed."
   echo -e "For security purposes this cannot be a * but you can change it by editing"
-  echo -e "athinaweb/settings_secret.py at any time. [127.0.0.1]"
+  echo -e "athina_web/settings_secret.py at any time. [127.0.0.1]"
   read ip
 
   if [ -z "$ip" ]; then
@@ -75,7 +75,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_HSTS_SECONDS = 31536000
 SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
-" > athinaweb/settings_secret.py
+" > athina_web/settings_secret.py
 
   # Initialize db (necessary to get the database and passwords setup (10secs are enough to initialize)
   docker compose up db &
@@ -99,7 +99,7 @@ fi
 
 if [ ! -f "certs/athinaweb.key" ]; then
     # Nginx config
-    cd athinaweb
+    cd athina_web
     ip=$(python -c 'import settings_secret; print settings_secret.ALLOWED_HOSTS[1]')
     cd ../certs/
     openssl req -x509 -nodes -newkey rsa:2048 -keyout athinaweb.key -out athinaweb.crt -subj "/C=US/ST=Washington/L=Bellingham/O=AthinaWeb/OU=AthinaWeb/CN=$ip"

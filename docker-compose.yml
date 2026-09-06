@@ -2,11 +2,11 @@ version: '3'
 services:
   athina-web:
     image: athinaedu/athina-web:latest
-    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8001 athinaweb.wsgi:application"
+    command: bash -c "python manage.py collectstatic --noinput && gunicorn --bind :8001 athina_web.wsgi:application"
     volumes:
       - ./athina_files/:/code/athina_files/
-      - ./db.sqlite3:/code/db.sqlite3
-      - ./athinaweb/settings_secret.py:/code/athinaweb/settings_secret.py
+      - ./db.sqlite3:/code/athina_web/db.sqlite3
+      - ./athina_web/settings_secret.py:/code/athina_web/settings_secret.py
       - ./static_files:/code/static_files
     expose:
       - "8001"

@@ -55,7 +55,7 @@ services:
       - "nginx"
       - "athina-web"
       - "db"
-    command: ["--json", "http://172.29.1.1/assignments/api/", "-s", "-v"]
+    command: ["--json", "http://172.29.1.2:8001/assignments/api/", "-s", "-v"]
     networks:
       athina_net:
         ipv4_address: 172.29.1.3

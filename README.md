@@ -31,9 +31,16 @@ This bundle deploys the complete **Athina** platform (grading engine + web dashb
 | Service | Image | IP | Role |
 |---------|-------|----|------|
 | **nginx** | `nginx:latest` | `172.29.1.1` | Reverse proxy, SSL termination, static files |
-| **athina-web** | `athinaedu/athina-web:latest` | `172.29.1.2` | Django web app (gunicorn on :8001) |
+| **athina-web** | `athinaedu/athina-web:latest` | `172.29.1.2` | Django 5.2 web app (Python 3.14, gunicorn on :8001) |
 | **athina** | `athinaedu/athina:latest` | `172.29.1.3` | Grading daemon (polls API every 60s) |
-| **db** | `mysql:5.7` | `172.29.1.4` | MySQL (databases: `athina_web` + `athina`) |
+| **db** | `mysql:8.0` | `172.29.1.4` | MySQL (databases: `athina_web` + `athina`) |
+
+## Stack
+
+- **Python 3.14** (latest)
+- **Django 5.2 LTS**
+- **MySQL 8.0**
+- **Docker** for test sandboxing
 
 ## Prerequisites
 * docker
@@ -43,24 +50,47 @@ This bundle deploys the complete **Athina** platform (grading engine + web dashb
 
 ## Run and auto-install
 ```bash
-sudo su   # run as root
+cd athina-one-click-run
 ./run.sh
 ```
 
 The first time execution will install and configure Athina. Subsequent runs will just start the services.
 
-## What `run.sh` does on first run
-1. Pulls the Docker images (`athinaedu/athina` + `athinaedu/athina-web`)
-2. Prompts for the authorized domain/IP
-3. Generates a random MySQL password and a Django `SECRET_KEY`
-4. Writes `athina_web/settings_secret.py` with production security settings
-5. Initializes the MySQL database and runs Django migrations
-6. Creates a superuser
-7. Generates self-signed SSL certificates
-8. Starts all services
+### Flags
 
-## Development overrides
-`docker-compose.override.yml` is gitignored and used for local development — it mounts local source directories instead of pulling images. It is **not** part of the production deployment.
+| Flag | Description |
+|------|-------------|
+| `--reset` | Full teardown (containers, volumes, data, certs) and reinstall |
+| `--status` | Show running service status |
+| `--stop` | Stop all services |
+| `--logs` | Tail all service logs |
+
+## What `run.sh` does on first run
+
+1. Checks dependencies (docker, pwgen, mysql-client, openssl)
+2. Pulls the latest Docker images from Docker Hub
+3. Prompts for the authorized domain(s)/IP(s) — supports comma-separated lists (e.g., `192.168.1.10, myserver.edu`)
+4. Auto-detects local IPs as default suggestion
+5. Generates a random MySQL password and a Django `SECRET_KEY`
+6. Writes `athina_web/settings_secret.py` with production security settings
+7. Initializes MySQL 8.0 with health checks (no hardcoded sleep timers)
+8. Creates the `athina` grading database
+9. Runs all Django migrations
+10. Prompts to create a superuser (for the web dashboard)
+11. Generates self-signed SSL certificates
+12. Collects static files
+13. Starts all services
+14. Verifies the web interface is responding
+
+## Configuration
+
+The generated `athina_web/settings_secret.py` contains:
+- Django `SECRET_KEY` (auto-generated)
+- `ALLOWED_HOSTS` (your domain/IP + Docker internal IP `172.29.1.1`)
+- MySQL credentials
+- Production security settings (HTTPS, HSTS, secure cookies)
+
+Edit this file directly to change settings. The file is mounted as a volume into the container.
 
 ## Deprecated
 The standalone `athina-web` repository is **deprecated**. All source now lives in the [athina](https://github.com/athina-edu/athina) repo under `athina_web/`.

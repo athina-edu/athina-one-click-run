@@ -15,7 +15,7 @@ services:
       ATHINA_MYSQL_HOST: "db"
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
-      ATHINA_MYSQL_PASSWORD: "foophaeCh4ood7Mu"
+      ATHINA_MYSQL_PASSWORD: "CHANGE_ME"
     networks:
       athina_net:
         ipv4_address: 172.29.1.2
@@ -42,7 +42,7 @@ services:
       ATHINA_MYSQL_HOST: "db"
       ATHINA_MYSQL_PORT: "3306"
       ATHINA_MYSQL_USERNAME: "athina"
-      ATHINA_MYSQL_PASSWORD: "foophaeCh4ood7Mu"
+      ATHINA_MYSQL_PASSWORD: "CHANGE_ME"
       ATHINA_WEB_URL: "https://127.0.0.1"
       GLOBAL_MEMORY_LIMIT: 80
       DOCKER_MEMORY_LIMIT: "2g"
@@ -67,8 +67,8 @@ services:
     environment:
       MYSQL_DATABASE: "athina_web"
       MYSQL_USER: "athina"
-      MYSQL_PASSWORD: "foophaeCh4ood7Mu"
-      MYSQL_ROOT_PASSWORD: "foophaeCh4ood7Mu"
+      MYSQL_PASSWORD: "CHANGE_ME"
+      MYSQL_ROOT_PASSWORD: "CHANGE_ME"
     volumes:
       - ./mysql:/var/lib/mysql
     tmpfs:

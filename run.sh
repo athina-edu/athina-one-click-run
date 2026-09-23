@@ -115,8 +115,12 @@ if [ ! -f "athina_web/settings_secret.py" ]; then
   read -rp "> " ip_input
   ip_input="${ip_input:-$default_hosts}"
 
-  # Format for Django ALLOWED_HOSTS (Python list)
-  django_hosts="'172.29.1.1'"
+  # Format for Django ALLOWED_HOSTS (Python list).
+  # '172.29.1.1' is the nginx container and '172.29.1.2' the athina-web container
+  # on the internal network. Both must be allowed: nginx proxies with
+  # Host $host (which is the client's host, often the IP on the docker network),
+  # and the grading daemon calls athina-web directly at 172.29.1.2:8001.
+  django_hosts="'172.29.1.1', '172.29.1.2'"
   IFS=',' read -ra HOSTS_ARRAY <<< "$ip_input"
   for host in "${HOSTS_ARRAY[@]}"; do
     host=$(echo "$host" | xargs) # trim whitespace

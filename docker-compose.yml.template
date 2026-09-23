@@ -55,7 +55,11 @@ services:
       - "nginx"
       - "athina-web"
       - "db"
-    command: ["--json", "http://172.29.1.2:8001/assignments/api/", "-s", "-v"]
+    # Poll the web app through nginx rather than straight to athina-web:8001.
+    # nginx sets X-Forwarded-Proto: https, which satisfies Django's
+    # SECURE_SSL_REDIRECT; hitting 172.29.1.2:8001 directly returns a 301 to
+    # https://172.29.1.2:8001 (a plain HTTP port) and the request hangs.
+    command: ["--json", "http://172.29.1.1/assignments/api/", "-s", "-v"]
     networks:
       athina_net:
         ipv4_address: 172.29.1.3

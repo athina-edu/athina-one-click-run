@@ -12,3 +12,5 @@ mysql/*
 docker-compose.yml
 # Local dev overrides (contains machine-specific paths) — not for production
 docker-compose.override.yml
+# Local database dumps (contain password hashes) — never commit
+backups/

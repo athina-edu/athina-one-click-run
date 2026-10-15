@@ -139,8 +139,13 @@ if [ ! -f "athina_web/settings_secret.py" ]; then
   # Update docker-compose.yml with real password and web URL
   tmpfile=$(mktemp)
   sed -r "s/_PASSWORD:.*/_PASSWORD: \"$mysql_pass\"/g" docker-compose.yml > "$tmpfile" && mv "$tmpfile" docker-compose.yml
+  # ATHINA_WEB_URL must be a SINGLE origin: the GitLab webhook URL is built by
+  # appending /assignments/webhook/ to it, so a comma-separated host list would
+  # produce a malformed hook URL. Use the first host; nginx still serves them all
+  # via server_name.
+  web_host=$(echo "$ip_input" | cut -d',' -f1 | tr -d ' ')
   tmpfile=$(mktemp)
-  sed -r "s|ATHINA_WEB_URL:.*|ATHINA_WEB_URL: \"https://$ip_input\"|g" docker-compose.yml > "$tmpfile" && mv "$tmpfile" docker-compose.yml
+  sed -r "s|ATHINA_WEB_URL:.*|ATHINA_WEB_URL: \"https://$web_host\"|g" docker-compose.yml > "$tmpfile" && mv "$tmpfile" docker-compose.yml
 
   # Generate Django secret key
   secret_key=$(head -c 64 /dev/urandom | base64 | tr -dc 'A-Za-z0-9!@#$%^&*' | head -c 64)
